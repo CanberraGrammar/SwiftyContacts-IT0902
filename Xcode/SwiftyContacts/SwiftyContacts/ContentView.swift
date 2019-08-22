@@ -18,9 +18,38 @@ struct AddContactModalView: View {
     
     @Environment(\.presentationMode) var presentationMode
     
+    @State var firstName = ""
+    @State var lastName = ""
+    @Binding var contactArray: [Contact]
+    
     var body: some View {
         
-        Text("Hello")
+        NavigationView {
+        
+            HStack {
+                TextField("First Name", text: $firstName)
+                TextField("Last Name", text: $lastName)
+            }
+            
+            .navigationBarTitle("Add Contact")
+            .navigationBarItems(trailing:
+            
+                Button(action: {
+                    
+                    let newContact = Contact(id: UUID().uuidString, firstName: self.firstName, lastName: self.lastName)
+                    
+                    self.contactArray.append(newContact)
+                    
+                    // This only works on Beta 5
+                    // self.presentationMode.value.dismiss()
+                    
+                }, label: {
+                    Text("Save")
+                })
+                
+            )
+            
+        }
         
     }
     
@@ -60,24 +89,17 @@ struct ContentView: View {
             }, label: {
                 Text("Add")
             })
-            
-                .sheet(isPresented: $showAddContactModalView, content: {
-                    AddContactModalView()
-                })
-                
+                       
             )
             
         }
         
-    }
-    
-    func addContact() {
-        
-        let newContact = Contact(id: UUID().uuidString, firstName: "Liam", lastName: "Molt")
-        contactArray.append(newContact)
+        .sheet(isPresented: $showAddContactModalView, content: {
+            AddContactModalView(contactArray: self.$contactArray)
+        })
         
     }
-    
+        
 }
 
 #if DEBUG
